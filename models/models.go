@@ -28,9 +28,9 @@ import (
 	"x-patrol/logger"
 	"x-patrol/settings"
 
-	//_ "github.com/mattn/go-sqlite3"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
+	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/go-xorm/core"
 	"github.com/go-xorm/xorm"
@@ -90,13 +90,13 @@ func init() {
 // init a database instance
 func NewDbEngine() (err error) {
 	switch DATA_TYPE {
-	//case "sqlite":
-	//	cur, _ := filepath.Abs(".")
-	//	dataSourceName := fmt.Sprintf("%v/%v/%v.db", cur, DATA_PATH, DATA_NAME)
-	//	logger.Log.Infof("sqlite db: %v", dataSourceName)
-	//	Engine, err = xorm.NewEngine("sqlite3", dataSourceName)
-	//	Engine.Logger().SetLevel(core.LOG_OFF)
-	//	err = Engine.Ping()
+	case "sqlite":
+		cur, _ := filepath.Abs(".")
+		dataSourceName := fmt.Sprintf("%v/%v/%v.db", cur, DATA_PATH, DATA_NAME)
+		logger.Log.Infof("sqlite db: %v", dataSourceName)
+		Engine, err = xorm.NewEngine("sqlite3", dataSourceName)
+		Engine.Logger().SetLevel(core.LOG_OFF)
+		err = Engine.Ping()
 
 	case "mysql":
 		dataSourceName := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8",
@@ -113,18 +113,13 @@ func NewDbEngine() (err error) {
 		err = Engine.Ping()
 
 	default:
-		dataSourceName := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8",
-			USERNAME, PASSWORD, DATA_HOST, DATA_PORT, DATA_NAME)
-
-		Engine, err = xorm.NewEngine("mysql", dataSourceName)
-		Engine.Logger().SetLevel(core.LOG_OFF)
-		err = Engine.Ping()
+		err = fmt.Errorf("not supported DB_TYPE: %s", DATA_TYPE)
 	}
 
 	return err
 }
 
-func InitRules() () {
+func InitRules() {
 	cur, _ := filepath.Abs(".")
 	ruleFile := fmt.Sprintf("%v/conf/gitrob.json", cur)
 	rules, err := GetAllRules()
