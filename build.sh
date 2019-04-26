@@ -1,9 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 export GO111MODULE=off
 
 # 项目放到$GOPATH/src/目录下，然后安装以下依赖
 go get -v github.com/hound-search/hound/codesearch/...
+go get -v github.com/mattn/go-sqlite3
 go get -v github.com/go-macaron/cache
 go get -v github.com/go-macaron/captcha
 go get -v github.com/go-macaron/csrf
